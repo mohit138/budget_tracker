@@ -5,24 +5,32 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.project.budgettracker.ui.HomeScreen
-import com.project.budgettracker.ui.components.AppBar
-import com.project.budgettracker.ui.components.NavigationMenu
-import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.project.budgettracker.ui.components.AppBar
+import com.project.budgettracker.ui.components.NavigationMenu
 import com.project.budgettracker.ui.navigation.Routes
-import com.project.budgettracker.ui.screens.AddScreen
+import com.project.budgettracker.ui.screens.AddCategoryScreen
+import com.project.budgettracker.ui.screens.AddExpenseScreen
 import com.project.budgettracker.ui.screens.CategoriesScreen
+import com.project.budgettracker.ui.screens.EditCategoryScreen
 import com.project.budgettracker.ui.screens.HistoryScreen
+import com.project.budgettracker.ui.screens.HomeScreen
 import com.project.budgettracker.ui.screens.SummaryScreen
+import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +42,8 @@ class MainActivity : ComponentActivity() {
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
 
                 ModalNavigationDrawer(
                     drawerState = drawerState,
@@ -61,8 +71,20 @@ class MainActivity : ComponentActivity() {
                                     scope.launch {
                                         drawerState.open()
                                     }
+                                },
+                                onTitleClick = {
+                                    navController.navigate(Routes.HOME)
                                 }
                             )
+                        },
+                        floatingActionButton = {
+                            if (currentRoute in listOf(Routes.HOME, Routes.SUMMARY, Routes.HISTORY)) {
+                                FloatingActionButton(
+                                    onClick = { navController.navigate(Routes.ADD_EXPENSE) }
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = "Add Expense")
+                                }
+                            }
                         }
                     ) { innerPadding ->
                         NavHost(
@@ -73,8 +95,10 @@ class MainActivity : ComponentActivity() {
                             composable(Routes.HOME) { HomeScreen() }
                             composable(Routes.SUMMARY) { SummaryScreen() }
                             composable(Routes.HISTORY) { HistoryScreen() }
-                            composable(Routes.CATEGORIES) { CategoriesScreen() }
-                            composable(Routes.ADD) { AddScreen() }
+                            composable(Routes.CATEGORIES) { CategoriesScreen(navController = navController) }
+                            composable(Routes.ADD_EXPENSE) { AddExpenseScreen() }
+                            composable(Routes.ADD_CATEGORY) { AddCategoryScreen() }
+                            composable(Routes.EDIT_CATEGORY) { EditCategoryScreen() }
                         }
                     }
                 }

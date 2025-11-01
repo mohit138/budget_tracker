@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,44 +16,37 @@ import androidx.compose.ui.unit.dp
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 
 @Composable
-fun ExpenseRow(
-    modifier: Modifier = Modifier,
+fun BudgetSpentRow(
     category: String,
-    amount: Double,
-    date: String
+    amountSpent: Double,
+    budget: Double
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = category, style = MaterialTheme.typography.titleLarge)
             Text(
-                text = category,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                text = date,
+                text = "₹%.2f / ₹%.2f".format(amountSpent, budget),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-        Text(
-            text = "₹${"%.2f".format(amount)}",
-            style = MaterialTheme.typography.titleLarge
-        )
+        CircularProgressIndicator(progress = (amountSpent / budget).toFloat())
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ExpenseRowPreview() {
+fun BudgetSpentRowPreview() {
     BudgetTrackerTheme {
-        ExpenseRow(
+        BudgetSpentRow(
             category = "Groceries",
-            amount = 1250.75,
-            date = "23 Oct 2024"
+            amountSpent = 1500.0,
+            budget = 5000.0
         )
     }
 }

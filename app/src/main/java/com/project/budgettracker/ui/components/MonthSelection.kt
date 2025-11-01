@@ -6,6 +6,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -14,7 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +51,7 @@ fun MonthSelection() {
                 value = selectedMonth,
                 onValueChange = {},
                 label = { Text("Month") },
+                textStyle = MaterialTheme.typography.bodyLarge,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedMonth) },
                 colors = ExposedDropdownMenuDefaults.textFieldColors()
             )
@@ -58,7 +62,7 @@ fun MonthSelection() {
                 months.forEachIndexed { index, month ->
                     val enabled = selectedYear != currentYear || index <= currentMonth
                     DropdownMenuItem(
-                        text = { Text(month) },
+                        text = { Text(month, style = MaterialTheme.typography.bodyLarge) },
                         onClick = {
                             selectedMonth = month
                             expandedMonth = false
@@ -80,6 +84,7 @@ fun MonthSelection() {
                 value = selectedYear.toString(),
                 onValueChange = {},
                 label = { Text("Year") },
+                textStyle = MaterialTheme.typography.bodyLarge,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedYear) },
                 colors = ExposedDropdownMenuDefaults.textFieldColors()
             )
@@ -89,7 +94,7 @@ fun MonthSelection() {
             ) {
                 years.forEach { year ->
                     DropdownMenuItem(
-                        text = { Text(year.toString()) },
+                        text = { Text(year.toString(), style = MaterialTheme.typography.bodyLarge) },
                         onClick = {
                             selectedYear = year
                             expandedYear = false
@@ -98,5 +103,13 @@ fun MonthSelection() {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MonthSelectionPreview() {
+    BudgetTrackerTheme {
+        MonthSelection()
     }
 }

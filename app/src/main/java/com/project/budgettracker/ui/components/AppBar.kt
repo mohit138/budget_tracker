@@ -1,5 +1,6 @@
 package com.project.budgettracker.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,16 +11,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(onNavigationIconClick: () -> Unit) {
+fun AppBar(onNavigationIconClick: () -> Unit, onTitleClick: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = "Budget Tracker")
+            Text(
+                text = "Budget Tracker",
+                modifier = Modifier.clickable(onClick = onTitleClick)
+            )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.onPrimary
         ),
         navigationIcon = {
             IconButton(onClick = onNavigationIconClick) {
@@ -30,4 +37,12 @@ fun AppBar(onNavigationIconClick: () -> Unit) {
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AppBarPreview(){
+    BudgetTrackerTheme {
+        AppBar(onNavigationIconClick = {}, onTitleClick = {})
+    }
 }
