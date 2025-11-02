@@ -1,4 +1,4 @@
-package com.project.budgettracker.ui.screens
+package com.project.budgettracker.ui.categories
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme

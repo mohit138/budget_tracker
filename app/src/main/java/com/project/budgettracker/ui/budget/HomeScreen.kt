@@ -1,4 +1,4 @@
-package com.project.budgettracker.ui.screens
+package com.project.budgettracker.ui.budget
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

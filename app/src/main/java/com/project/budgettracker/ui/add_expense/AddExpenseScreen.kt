@@ -1,4 +1,4 @@
-package com.project.budgettracker.ui.screens
+package com.project.budgettracker.ui.add_expense
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

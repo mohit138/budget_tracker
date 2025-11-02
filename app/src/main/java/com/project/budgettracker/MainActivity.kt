@@ -23,13 +23,13 @@ import androidx.navigation.compose.rememberNavController
 import com.project.budgettracker.ui.components.AppBar
 import com.project.budgettracker.ui.components.NavigationMenu
 import com.project.budgettracker.ui.navigation.Routes
-import com.project.budgettracker.ui.screens.AddCategoryScreen
-import com.project.budgettracker.ui.screens.AddExpenseScreen
-import com.project.budgettracker.ui.screens.CategoriesScreen
-import com.project.budgettracker.ui.screens.EditCategoryScreen
-import com.project.budgettracker.ui.screens.HistoryScreen
-import com.project.budgettracker.ui.screens.HomeScreen
-import com.project.budgettracker.ui.screens.SummaryScreen
+import com.project.budgettracker.ui.categories.AddCategoryScreen
+import com.project.budgettracker.ui.add_expense.AddExpenseScreen
+import com.project.budgettracker.ui.categories.CategoriesScreen
+import com.project.budgettracker.ui.categories.EditCategoryScreen
+import com.project.budgettracker.ui.budget.HistoryScreen
+import com.project.budgettracker.ui.budget.HomeScreen
+import com.project.budgettracker.ui.budget.SummaryScreen
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import kotlinx.coroutines.launch
 
