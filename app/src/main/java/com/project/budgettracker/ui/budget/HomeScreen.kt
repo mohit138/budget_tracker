@@ -15,7 +15,12 @@ import androidx.compose.ui.unit.dp
 import com.project.budgettracker.ui.components.History
 import com.project.budgettracker.ui.components.MonthSelection
 import com.project.budgettracker.ui.components.Summary
+import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
+
+object HomeDestination : NavigationDestination {
+    override val route = "home"
+}
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {

@@ -10,6 +10,14 @@ import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 fun Summary(modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier) {
         item {
+            BudgetSpentRow(
+                category = "Net Budget",
+                amountSpent = 4500.0,
+                budget = 6000.0,
+                isHighlighted = true
+            )
+        }
+        item {
             BudgetSpentRow(category = "Groceries", amountSpent = 1200.0, budget = 2000.0)
         }
         item {

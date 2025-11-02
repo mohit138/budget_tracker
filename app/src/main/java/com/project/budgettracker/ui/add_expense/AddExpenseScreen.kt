@@ -19,6 +19,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -31,10 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+object AddExpenseDestination : NavigationDestination {
+    override val route = "add_expense"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +56,13 @@ fun AddExpenseScreen() {
     var amount by remember { mutableStateOf("") }
 
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= System.currentTimeMillis()
+            }
+        }
+    )
     val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
 
 

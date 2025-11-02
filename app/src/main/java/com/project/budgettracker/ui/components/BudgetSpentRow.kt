@@ -19,8 +19,12 @@ import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 fun BudgetSpentRow(
     category: String,
     amountSpent: Double,
-    budget: Double
+    budget: Double,
+    isHighlighted: Boolean = false
 ) {
+    val categoryStyle = if (isHighlighted) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleLarge
+    val amountStyle = if (isHighlighted) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,10 +33,10 @@ fun BudgetSpentRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = category, style = MaterialTheme.typography.titleLarge)
+            Text(text = category, style = categoryStyle)
             Text(
                 text = "₹%.2f / ₹%.2f".format(amountSpent, budget),
-                style = MaterialTheme.typography.bodyLarge
+                style = amountStyle
             )
         }
         CircularProgressIndicator(progress = (amountSpent / budget).toFloat())
@@ -47,6 +51,19 @@ fun BudgetSpentRowPreview() {
             category = "Groceries",
             amountSpent = 1500.0,
             budget = 5000.0
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HighlightedBudgetSpentRowPreview() {
+    BudgetTrackerTheme {
+        BudgetSpentRow(
+            category = "Gross Budget",
+            amountSpent = 45000.0,
+            budget = 60000.0,
+            isHighlighted = true
         )
     }
 }

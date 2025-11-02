@@ -18,7 +18,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.project.budgettracker.ui.navigation.Routes
+import com.project.budgettracker.ui.budget.HistoryDestination
+import com.project.budgettracker.ui.budget.HomeDestination
+import com.project.budgettracker.ui.budget.SummaryDestination
+import com.project.budgettracker.ui.categories.AddCategoryDestination
+import com.project.budgettracker.ui.categories.CategoriesDestination
+import com.project.budgettracker.ui.add_expense.AddExpenseDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 
 @Composable
@@ -41,12 +46,12 @@ fun NavigationMenu(
                 }
             }
 
-            NavItem(text = "Home") { navigateTo(Routes.HOME) }
-            NavItem(text = "Summary") { navigateTo(Routes.SUMMARY) }
-            NavItem(text = "History") { navigateTo(Routes.HISTORY) }
-            NavItem(text = "Categories") { navigateTo(Routes.CATEGORIES) }
-            NavItem(text = "Add Expense") { navigateTo(Routes.ADD_EXPENSE) }
-            NavItem(text = "Add Category") { navigateTo(Routes.ADD_CATEGORY) }
+            NavItem(text = "Home") { navigateTo(HomeDestination.route) }
+            NavItem(text = "Summary") { navigateTo(SummaryDestination.route) }
+            NavItem(text = "History") { navigateTo(HistoryDestination.route) }
+            NavItem(text = "Categories") { navigateTo(CategoriesDestination.route) }
+            NavItem(text = "Add Expense") { navigateTo(AddExpenseDestination.route) }
+            NavItem(text = "Add Category") { navigateTo(AddCategoryDestination.route) }
         }
     }
 }

@@ -20,16 +20,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.project.budgettracker.ui.add_expense.AddExpenseDestination
+import com.project.budgettracker.ui.add_expense.AddExpenseScreen
+import com.project.budgettracker.ui.budget.HistoryDestination
+import com.project.budgettracker.ui.budget.HistoryScreen
+import com.project.budgettracker.ui.budget.HomeDestination
+import com.project.budgettracker.ui.budget.HomeScreen
+import com.project.budgettracker.ui.budget.SummaryDestination
+import com.project.budgettracker.ui.budget.SummaryScreen
+import com.project.budgettracker.ui.categories.AddCategoryDestination
+import com.project.budgettracker.ui.categories.AddCategoryScreen
+import com.project.budgettracker.ui.categories.CategoriesDestination
+import com.project.budgettracker.ui.categories.CategoriesScreen
+import com.project.budgettracker.ui.categories.EditCategoryDestination
+import com.project.budgettracker.ui.categories.EditCategoryScreen
 import com.project.budgettracker.ui.components.AppBar
 import com.project.budgettracker.ui.components.NavigationMenu
-import com.project.budgettracker.ui.navigation.Routes
-import com.project.budgettracker.ui.categories.AddCategoryScreen
-import com.project.budgettracker.ui.add_expense.AddExpenseScreen
-import com.project.budgettracker.ui.categories.CategoriesScreen
-import com.project.budgettracker.ui.categories.EditCategoryScreen
-import com.project.budgettracker.ui.budget.HistoryScreen
-import com.project.budgettracker.ui.budget.HomeScreen
-import com.project.budgettracker.ui.budget.SummaryScreen
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import kotlinx.coroutines.launch
 
@@ -73,14 +79,14 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 onTitleClick = {
-                                    navController.navigate(Routes.HOME)
+                                    navController.navigate(HomeDestination.route)
                                 }
                             )
                         },
                         floatingActionButton = {
-                            if (currentRoute in listOf(Routes.HOME, Routes.SUMMARY, Routes.HISTORY)) {
+                            if (currentRoute in listOf(HomeDestination.route, SummaryDestination.route, HistoryDestination.route)) {
                                 FloatingActionButton(
-                                    onClick = { navController.navigate(Routes.ADD_EXPENSE) }
+                                    onClick = { navController.navigate(AddExpenseDestination.route) }
                                 ) {
                                     Icon(Icons.Default.Add, contentDescription = "Add Expense")
                                 }
@@ -89,16 +95,16 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
-                            startDestination = Routes.HOME,
+                            startDestination = HomeDestination.route,
                             modifier = Modifier.padding(innerPadding)
                         ) {
-                            composable(Routes.HOME) { HomeScreen() }
-                            composable(Routes.SUMMARY) { SummaryScreen() }
-                            composable(Routes.HISTORY) { HistoryScreen() }
-                            composable(Routes.CATEGORIES) { CategoriesScreen(navController = navController) }
-                            composable(Routes.ADD_EXPENSE) { AddExpenseScreen() }
-                            composable(Routes.ADD_CATEGORY) { AddCategoryScreen() }
-                            composable(Routes.EDIT_CATEGORY) { EditCategoryScreen() }
+                            composable(HomeDestination.route) { HomeScreen() }
+                            composable(SummaryDestination.route) { SummaryScreen() }
+                            composable(HistoryDestination.route) { HistoryScreen() }
+                            composable(CategoriesDestination.route) { CategoriesScreen(navController = navController) }
+                            composable(AddExpenseDestination.route) { AddExpenseScreen() }
+                            composable(AddCategoryDestination.route) { AddCategoryScreen() }
+                            composable(EditCategoryDestination.route) { EditCategoryScreen() }
                         }
                     }
                 }

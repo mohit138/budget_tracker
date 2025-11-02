@@ -13,7 +13,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.budgettracker.ui.components.History
 import com.project.budgettracker.ui.components.MonthSelection
+import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
+
+object HistoryDestination : NavigationDestination {
+    override val route = "history"
+}
 
 @Composable
 fun HistoryScreen() {

@@ -20,7 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
+
+object AddCategoryDestination : NavigationDestination {
+    override val route = "add_category"
+}
 
 @Composable
 fun AddCategoryScreen() {

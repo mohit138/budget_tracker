@@ -8,8 +8,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.project.budgettracker.ui.components.CategoryItem
-import com.project.budgettracker.ui.navigation.Routes
+import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
+
+object CategoriesDestination : NavigationDestination {
+    override val route = "categories"
+}
 
 @Composable
 fun CategoriesScreen(navController: NavController) {
@@ -19,13 +23,13 @@ fun CategoriesScreen(navController: NavController) {
             style = MaterialTheme.typography.headlineLarge
         )
         CategoryItem(categoryName = "Groceries", budget = 5000.0, onEditClick = {
-            navController.navigate(Routes.EDIT_CATEGORY)
+            navController.navigate(EditCategoryDestination.route)
         })
         CategoryItem(categoryName = "Entertainment", budget = 3000.0, onEditClick = {
-            navController.navigate(Routes.EDIT_CATEGORY)
+            navController.navigate(EditCategoryDestination.route)
         })
         CategoryItem(categoryName = "Utilities", budget = 4000.0, onEditClick = {
-            navController.navigate(Routes.EDIT_CATEGORY)
+            navController.navigate(EditCategoryDestination.route)
         })
     }
 }
