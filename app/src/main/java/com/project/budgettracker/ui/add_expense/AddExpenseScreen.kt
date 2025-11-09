@@ -23,20 +23,25 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.project.budgettracker.AppViewModelProvider
 import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 object AddExpenseDestination : NavigationDestination {
     override val route = "add_expense"
@@ -44,36 +49,33 @@ object AddExpenseDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen() {
-    var category by remember { mutableStateOf("") }
-    val categories = listOf("Food", "Groceries", "Entertainment", "Transport")
+fun AddExpenseScreen(
+    navigateToHome: () -> Unit,
+    viewModel: AddExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
-    val currentDate = remember {
-        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-    }
-    var date by remember { mutableStateOf(currentDate) }
-    var details by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(
-        selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                return utcTimeMillis <= System.currentTimeMillis()
-            }
-        }
-    )
-    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+    val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
 
     if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return utcTimeMillis <= System.currentTimeMillis()
+                }
+            }
+        )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 Button(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            date = dateFormatter.format(Date(millis))
+                            val selectedDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                            viewModel.updateExpenseUiState(uiState.expenseDetails.copy(date = selectedDate))
                         }
                         showDatePicker = false
                     }
@@ -105,12 +107,13 @@ fun AddExpenseScreen() {
             expanded = expanded,
             onExpandedChange = { expanded = !expanded }
         ) {
+            val selectedCategory = uiState.categories.find { it.id == uiState.expenseDetails.categoryId }
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
                 readOnly = true,
-                value = category,
+                value = selectedCategory?.name ?: "",
                 onValueChange = {},
                 label = { Text("Category") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -119,11 +122,11 @@ fun AddExpenseScreen() {
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
             ) {
-                categories.forEach { selectionOption ->
+                uiState.categories.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(selectionOption) },
+                        text = { Text(category.name) },
                         onClick = {
-                            category = selectionOption
+                            viewModel.updateExpenseUiState(uiState.expenseDetails.copy(categoryId = category.id))
                             expanded = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -133,7 +136,7 @@ fun AddExpenseScreen() {
         }
 
         OutlinedTextField(
-            value = date,
+            value = uiState.expenseDetails.date.format(dateFormatter),
             onValueChange = {},
             readOnly = true,
             label = { Text("Date") },
@@ -150,21 +153,29 @@ fun AddExpenseScreen() {
         )
 
         OutlinedTextField(
-            value = details,
-            onValueChange = { details = it },
+            value = uiState.expenseDetails.description,
+            onValueChange = { viewModel.updateExpenseUiState(uiState.expenseDetails.copy(description = it)) },
             label = { Text("Details") },
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
-            value = amount,
-            onValueChange = { amount = it },
+            value = uiState.expenseDetails.amount,
+            onValueChange = { viewModel.updateExpenseUiState(uiState.expenseDetails.copy(amount = it)) },
             label = { Text("Amount") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
 
-        Button(onClick = { /*TODO*/ }) {
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    viewModel.saveExpense()
+                    navigateToHome()
+                }
+            },
+            enabled = uiState.isEntryValid
+        ) {
             Text("Add Expense")
         }
     }
@@ -174,6 +185,6 @@ fun AddExpenseScreen() {
 @Composable
 fun AddExpenseScreenPreview() {
     BudgetTrackerTheme {
-        AddExpenseScreen()
+        AddExpenseScreen(navigateToHome = {})
     }
 }

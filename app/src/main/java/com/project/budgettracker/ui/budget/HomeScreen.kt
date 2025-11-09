@@ -28,7 +28,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MonthSelection()
+        MonthSelection(
+            selectedYear = 2024,
+            selectedMonth = 5,
+            onDateChange = { _, _ -> }
+        )
 
         Card(
             modifier = Modifier
@@ -62,7 +66,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(8.dp)
                 )
-                History(modifier = Modifier.fillMaxSize())
+                History(
+                    expenses = listOf()
+                )
             }
         }
     }

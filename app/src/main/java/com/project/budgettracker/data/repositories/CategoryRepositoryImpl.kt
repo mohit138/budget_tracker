@@ -24,7 +24,7 @@ class CategoryRepositoryImpl (
         return categoryDao.getAllCategories()
     }
 
-    override suspend fun getCategoryById(id: Int): Category? {
+    override fun getCategoryById(id: Int): Flow<Category?> {
         return categoryDao.getCategoryById(id)
     }
 }

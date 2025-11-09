@@ -11,27 +11,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.project.budgettracker.AppViewModelProvider
 import com.project.budgettracker.ui.navigation.NavigationDestination
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
+import kotlinx.coroutines.launch
 
 object EditCategoryDestination : NavigationDestination {
     override val route = "edit_category"
+    const val categoryIdArg = "categoryId"
+    val routeWithArgs = "$route/{$categoryIdArg}"
 }
 
 @Composable
-fun EditCategoryScreen() {
-    // For now, it is similar to AddCategoryForm. It would typically be pre-filled.
-    var categoryName by remember { mutableStateOf("Groceries") } // Sample pre-fill
-    var budgetAmount by remember { mutableStateOf("5000.0") } // Sample pre-fill
+fun EditCategoryScreen(
+    viewModel: EditCategoryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navigateBack: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val categoryDetails = viewModel.categoryUiState.categoryDetails
 
     Column(
         modifier = Modifier
@@ -43,21 +48,26 @@ fun EditCategoryScreen() {
         Text(text = "Edit Category", style = MaterialTheme.typography.headlineMedium)
 
         OutlinedTextField(
-            value = categoryName,
-            onValueChange = { categoryName = it },
+            value = categoryDetails.name,
+            onValueChange = { viewModel.updateCategoryUiState(categoryDetails.copy(name = it)) },
             label = { Text("Category Name") },
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
-            value = budgetAmount,
-            onValueChange = { budgetAmount = it },
+            value = categoryDetails.budget,
+            onValueChange = { viewModel.updateCategoryUiState(categoryDetails.copy(budget = it)) },
             label = { Text("Budget Amount") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
 
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = {
+            coroutineScope.launch {
+                viewModel.updateCategory()
+                navigateBack()
+            }
+        }) {
             Text("Update Category")
         }
     }
@@ -67,6 +77,9 @@ fun EditCategoryScreen() {
 @Composable
 fun EditCategoryScreenPreview() {
     BudgetTrackerTheme {
-        EditCategoryScreen()
+        EditCategoryScreen(
+            viewModel = viewModel(factory = AppViewModelProvider.Factory),
+            navigateBack = {}
+        )
     }
 }

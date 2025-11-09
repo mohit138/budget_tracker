@@ -31,7 +31,11 @@ fun SummaryScreen() {
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(8.dp)
         )
-        MonthSelection()
+        MonthSelection(
+            selectedYear = 2024,
+            selectedMonth = 5,
+            onDateChange = { _, _ -> }
+        )
         Summary()
     }
 }

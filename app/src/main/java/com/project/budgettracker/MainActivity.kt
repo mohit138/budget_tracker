@@ -16,10 +16,12 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.project.budgettracker.ui.add_expense.AddExpenseDestination
 import com.project.budgettracker.ui.add_expense.AddExpenseScreen
 import com.project.budgettracker.ui.budget.HistoryDestination
@@ -101,10 +103,27 @@ class MainActivity : ComponentActivity() {
                             composable(HomeDestination.route) { HomeScreen() }
                             composable(SummaryDestination.route) { SummaryScreen() }
                             composable(HistoryDestination.route) { HistoryScreen() }
-                            composable(CategoriesDestination.route) { CategoriesScreen(navController = navController) }
-                            composable(AddExpenseDestination.route) { AddExpenseScreen() }
-                            composable(AddCategoryDestination.route) { AddCategoryScreen() }
-                            composable(EditCategoryDestination.route) { EditCategoryScreen() }
+                            composable(CategoriesDestination.route) {
+                                CategoriesScreen(navigateToEditCategory = { categoryId ->
+                                    navController.navigate("${EditCategoryDestination.route}/$categoryId")
+                                })
+                            }
+                            composable(AddExpenseDestination.route) {
+                                AddExpenseScreen(
+                                    navigateToHome = { navController.navigate(HomeDestination.route) }
+                                )
+                            }
+                            composable(AddCategoryDestination.route) { AddCategoryScreen(
+                                navigateToCategoriesScreen = { navController.navigate(CategoriesDestination.route) }
+                            ) }
+                            composable(
+                                route = EditCategoryDestination.routeWithArgs,
+                                arguments = listOf(navArgument(EditCategoryDestination.categoryIdArg) {
+                                    type = NavType.IntType
+                                })
+                                ) { EditCategoryScreen(
+                                    navigateBack = { navController.navigateUp() }
+                                ) }
                         }
                     }
                 }
