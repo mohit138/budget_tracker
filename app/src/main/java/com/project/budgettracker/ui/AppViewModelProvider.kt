@@ -8,9 +8,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.project.budgettracker.BudgetTrackerApplication
 import com.project.budgettracker.ui.add_expense.AddExpenseViewModel
+import com.project.budgettracker.ui.budget.BudgetViewModel
 import com.project.budgettracker.ui.categories.EditCategoryViewModel
 import com.project.budgettracker.ui.categories.AddCategoryViewModel
-import com.project.budgettracker.ui.budget.HistoryViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -37,9 +37,9 @@ object AppViewModelProvider {
             )
         }
 
-        // Initializer for HistoryViewModel
+        // Initializer for BudgetViewModel
         initializer {
-            HistoryViewModel(
+            BudgetViewModel(
                 budgetTrackerApplication().container.expensesRepository,
                 budgetTrackerApplication().container.categoryRepository
             )

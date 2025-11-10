@@ -1,48 +1,31 @@
 package com.project.budgettracker.ui.components
 
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 
+/**
+ * Data class representing the data for a single row in the Summary list.
+ */
+data class SummaryRowData(
+    val category: String,
+    val amountSpent: Double,
+    val budget: Double
+)
+
 @Composable
-fun Summary(modifier: Modifier = Modifier) {
+fun Summary(modifier: Modifier = Modifier, summaryRowData: List<SummaryRowData>) {
     LazyColumn(modifier = modifier) {
-        item {
+        items(summaryRowData) { data ->
             BudgetSpentRow(
-                category = "Net Budget",
-                amountSpent = 4500.0,
-                budget = 6000.0,
-                isHighlighted = true
+                category = data.category,
+                amountSpent = data.amountSpent,
+                budget = data.budget,
+                isHighlighted = (data.category == "Net Budget") // Example of conditional highlighting
             )
-        }
-        item {
-            BudgetSpentRow(category = "Groceries", amountSpent = 1200.0, budget = 2000.0)
-        }
-        item {
-            BudgetSpentRow(category = "Entertainment", amountSpent = 800.0, budget = 1500.0)
-        }
-        item {
-            BudgetSpentRow(category = "Utilities", amountSpent = 2500.0, budget = 2500.0)
-        }
-        item {
-            BudgetSpentRow(category = "Groceries", amountSpent = 1200.0, budget = 2000.0)
-        }
-        item {
-            BudgetSpentRow(category = "Entertainment", amountSpent = 800.0, budget = 1500.0)
-        }
-        item {
-            BudgetSpentRow(category = "Utilities", amountSpent = 2500.0, budget = 2500.0)
-        }
-        item {
-            BudgetSpentRow(category = "Groceries", amountSpent = 1200.0, budget = 2000.0)
-        }
-        item {
-            BudgetSpentRow(category = "Entertainment", amountSpent = 800.0, budget = 1500.0)
-        }
-        item {
-            BudgetSpentRow(category = "Utilities", amountSpent = 2500.0, budget = 2500.0)
         }
     }
 }
@@ -51,6 +34,12 @@ fun Summary(modifier: Modifier = Modifier) {
 @Composable
 fun SummaryPreview() {
     BudgetTrackerTheme {
-        Summary()
+        val sampleData = listOf(
+            SummaryRowData("Net Budget", 4500.0, 6000.0),
+            SummaryRowData("Groceries", 1200.0, 2000.0),
+            SummaryRowData("Entertainment", 800.0, 1500.0),
+            SummaryRowData("Utilities", 2500.0, 2500.0)
+        )
+        Summary(summaryRowData = sampleData)
     }
 }

@@ -1,6 +1,5 @@
 package com.project.budgettracker.ui.budget
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,9 +24,9 @@ object HistoryDestination : NavigationDestination {
 }
 
 @Composable
-fun HistoryScreen(viewModel: HistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun HistoryScreen(viewModel: BudgetViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     val uiState by viewModel.uiState.collectAsState()
-    Log.d("HistoryScreen", "uiState: $uiState")
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -42,7 +41,7 @@ fun HistoryScreen(viewModel: HistoryViewModel = viewModel(factory = AppViewModel
             selectedMonth = uiState.selectedMonth,
             onDateChange = viewModel::onDateChange
         )
-        History(expenses = uiState.expenses)
+        History(expenses = uiState.expensesWithCategory)
     }
 }
 
@@ -50,6 +49,9 @@ fun HistoryScreen(viewModel: HistoryViewModel = viewModel(factory = AppViewModel
 @Composable
 fun HistoryScreenPreview() {
     BudgetTrackerTheme {
-        HistoryScreen()
+        // Preview might need a mock ViewModel or placeholder data in the future
+        HistoryScreen(
+            viewModel = viewModel(factory = AppViewModelProvider.Factory)
+        )
     }
 }

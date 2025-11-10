@@ -21,12 +21,12 @@ interface ExpenseDao {
     @Delete
     suspend fun delete(expense: Expense)
 
-    @Query("SELECT * FROM expenses")
+    @Query("SELECT * FROM expenses ORDER BY date DESC")
     fun getAllExpenses(): Flow<List<Expense>>
 
-    @Query("SELECT * FROM expenses WHERE categoryId = :categoryId")
+    @Query("SELECT * FROM expenses WHERE categoryId = :categoryId ORDER BY date DESC")
     fun getExpensesForCategory(categoryId: Int): Flow<List<Expense>>
 
-    @Query("SELECT * FROM expenses WHERE date BETWEEN :startDate AND :endDate")
+    @Query("SELECT * FROM expenses WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC")
     fun getExpensesBetweenDates(startDate: Date, endDate: Date): Flow<List<Expense>>
 }

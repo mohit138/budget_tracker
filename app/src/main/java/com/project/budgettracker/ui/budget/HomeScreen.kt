@@ -8,10 +8,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.project.budgettracker.ui.AppViewModelProvider
 import com.project.budgettracker.ui.components.History
 import com.project.budgettracker.ui.components.MonthSelection
 import com.project.budgettracker.ui.components.Summary
@@ -23,15 +27,25 @@ object HomeDestination : NavigationDestination {
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BudgetViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    // The data is now pre-computed in the ViewModel. We just use it here.
+    val summaryDataForUI = listOfNotNull(uiState.netBudgetData) + uiState.summaryData
+
+    val recentExpenses = uiState.expensesWithCategory
+
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MonthSelection(
-            selectedYear = 2024,
-            selectedMonth = 5,
-            onDateChange = { _, _ -> }
+            selectedYear = uiState.selectedYear,
+            selectedMonth = uiState.selectedMonth,
+            onDateChange = viewModel::onDateChange
         )
 
         Card(
@@ -48,7 +62,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(8.dp)
                 )
-                Summary(modifier = Modifier.fillMaxSize())
+                Summary(summaryRowData = summaryDataForUI)
             }
         }
 
@@ -67,7 +81,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(8.dp)
                 )
                 History(
-                    expenses = listOf()
+                    expenses = recentExpenses
                 )
             }
         }
