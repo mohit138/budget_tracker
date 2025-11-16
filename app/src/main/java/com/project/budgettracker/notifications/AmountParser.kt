@@ -1,6 +1,6 @@
 object AmountParser {
 
-    private val ignoreKeywords = listOf("otp", "offer", " off ")
+    private val ignoreKeywords = listOf("otp", "offer", " off ", "%")
 
     // -----------------------------
     // 1. Ignore spam/OTP
@@ -26,7 +26,7 @@ object AmountParser {
     // -----------------------------
     fun extractActionBasedAmount(text: String): Double? {
         val regex = Regex(
-            "(debited(?: by)?|debit|sent|trf|paid|credited)\\s*([0-9]+(?:\\.[0-9]+)?)",
+            "(debited(?: by)?|debit|sent|trf|paid)\\s*([0-9]+(?:\\.[0-9]+)?)",
             RegexOption.IGNORE_CASE
         )
         val match = regex.find(text)
