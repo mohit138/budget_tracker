@@ -11,6 +11,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Telephony
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -29,9 +30,10 @@ class NotificationReaderService : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (sbn == null) return
+        val defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(applicationContext)
 
-        // Ignore your own notifications (important!)
-        if (sbn.packageName == packageName) {
+        // Ignore non message related notifications (important!)
+        if (sbn.packageName != defaultSmsApp) {
             return
         }
 
