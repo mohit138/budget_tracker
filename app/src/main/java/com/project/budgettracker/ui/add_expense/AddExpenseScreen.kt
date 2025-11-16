@@ -23,6 +23,7 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,14 +46,24 @@ import java.time.format.DateTimeFormatter
 
 object AddExpenseDestination : NavigationDestination {
     override val route = "add_expense"
+    const val amountArg = "amount"
+    // Optional argument
+    val routeWithArgs = "$route?$amountArg={$amountArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseScreen(
     navigateToHome: () -> Unit,
+    prefilledAmount: String? = null,
     viewModel: AddExpenseViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    LaunchedEffect(prefilledAmount) {
+        prefilledAmount?.let {
+            viewModel.updateAmountIfEmpty(it)
+        }
+    }
+
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }

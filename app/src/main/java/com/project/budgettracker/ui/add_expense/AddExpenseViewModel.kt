@@ -58,6 +58,13 @@ class AddExpenseViewModel(
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
+
+    fun updateAmountIfEmpty(amount: String) {
+        val current = _expenseDetails.value
+        if (current.amount.isBlank()) {
+            _expenseDetails.value = current.copy(amount = amount)
+        }
+    }
 }
 
 // Single, consolidated UI state data class
