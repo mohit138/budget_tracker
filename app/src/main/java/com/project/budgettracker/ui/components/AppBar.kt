@@ -38,8 +38,6 @@ fun AppBar(
             }
         },
         actions = {
-            // existing actions (if any)...
-
             if (showNotificationBell) {
                 IconButton(onClick = onNotificationClick) {
                     Icon(
