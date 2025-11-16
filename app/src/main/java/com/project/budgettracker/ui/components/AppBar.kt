@@ -3,6 +3,7 @@ package com.project.budgettracker.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,7 +16,12 @@ import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(onNavigationIconClick: () -> Unit, onTitleClick: () -> Unit) {
+fun AppBar(
+    onNavigationIconClick: () -> Unit,
+    onTitleClick: () -> Unit,
+    showNotificationBell: Boolean = false,
+    onNotificationClick: () -> Unit = {}
+) {
     TopAppBar(
         title = {
             Text(
@@ -29,6 +35,18 @@ fun AppBar(onNavigationIconClick: () -> Unit, onTitleClick: () -> Unit) {
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Toggle drawer"
                 )
+            }
+        },
+        actions = {
+            // existing actions (if any)...
+
+            if (showNotificationBell) {
+                IconButton(onClick = onNotificationClick) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Enable notification access"
+                    )
+                }
             }
         }
     )

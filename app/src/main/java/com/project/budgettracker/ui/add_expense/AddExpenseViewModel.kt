@@ -51,7 +51,7 @@ class AddExpenseViewModel(
 
     private fun validateInput(expenseDetails: ExpenseDetails): Boolean {
         return with(expenseDetails) {
-            amount.isNotBlank() && description.isNotBlank() && categoryId != 0
+            amount.isNotBlank() && categoryId != 0
         }
     }
 

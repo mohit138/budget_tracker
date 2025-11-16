@@ -1,6 +1,9 @@
 package com.project.budgettracker
 
+import NotificationAccessPopup
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,7 +46,12 @@ import com.project.budgettracker.ui.theme.BudgetTrackerTheme
 import kotlinx.coroutines.launch
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
+import com.project.budgettracker.notifications.isNotificationListenerEnabled
+import com.project.budgettracker.notifications.isPostNotificationGranted
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
     private val requestNotificationPermissionLauncher = registerForActivityResult(
@@ -58,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
     // call this function when you want to request permission
     private fun ensurePostNotificationsPermission() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val perm = android.Manifest.permission.POST_NOTIFICATIONS
             when {
                 ContextCompat.checkSelfPermission(this, perm) == PackageManager.PERMISSION_GRANTED -> {
@@ -76,7 +84,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createExpenseNotificationChannel() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = android.app.NotificationChannel(
                 CHANNEL_ID,
                 "Expense detection",
@@ -93,12 +101,17 @@ class MainActivity : ComponentActivity() {
         const val CHANNEL_ID = "expense_detection_channel"
     }
 
+    private val hasNotificationAccess = mutableStateOf(false)
+    private val hasNotificationPostAccess = mutableStateOf(false)
+    private val hasNotificationReadAccess = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         createExpenseNotificationChannel()
         ensurePostNotificationsPermission()
         super.onCreate(savedInstanceState)
+        updateNotificationAccessStates()
+
         enableEdgeToEdge()
         setContent {
             BudgetTrackerTheme {
@@ -107,6 +120,11 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
+
+                val showPermissionPopup = remember { mutableStateOf(false) }
+
+                // pass handler to AppBar
+                val onBellClick = { showPermissionPopup.value = true }
 
                 val startIntent = intent
                 LaunchedEffect(startIntent) {
@@ -146,7 +164,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onTitleClick = {
                                     navController.navigate(HomeDestination.route)
-                                }
+                                },
+                                showNotificationBell = !hasNotificationAccess.value,
+                                onNotificationClick = onBellClick
                             )
                         },
                         floatingActionButton = {
@@ -201,8 +221,59 @@ class MainActivity : ComponentActivity() {
                                 ) }
                         }
                     }
+
+                    if (showPermissionPopup.value) {
+                        NotificationAccessPopup(
+                            hasNotificationPostAccess = hasNotificationPostAccess.value,
+                            hasNotificationReadAccess = hasNotificationReadAccess.value,
+                            onGrantNotificationRead = {
+                                showPermissionPopup.value = false
+                                openNotificationAccessSettings()
+                            },
+                            onGrantNotificationPost = {
+                                showPermissionPopup.value = false
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    openAppNotificationSettings()
+                                }
+                            },
+                            onDismiss = { showPermissionPopup.value = false }
+                        )
+                    }
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Re-check when returning from Settings — updates Compose because it's a MutableState
+        updateNotificationAccessStates()
+    }
+
+
+    private fun updateNotificationAccessStates() {
+        hasNotificationAccess.value = isNotificationListenerEnabled(this) && isPostNotificationGranted(this)
+        hasNotificationReadAccess.value = isNotificationListenerEnabled(this)
+        hasNotificationPostAccess.value = isPostNotificationGranted(this)
+    }
+
+    private fun openNotificationAccessSettings() {
+        val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+        startActivity(intent)
+    }
+
+    private fun openAppNotificationSettings() {
+        val intent = Intent().apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                action = android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+            } else {
+                // For older versions, open general app details
+                action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                addCategory(Intent.CATEGORY_DEFAULT)
+                data = "package:$packageName".toUri()
+            }
+        }
+        startActivity(intent)
     }
 }
