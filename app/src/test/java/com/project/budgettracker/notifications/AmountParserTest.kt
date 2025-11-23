@@ -10,8 +10,17 @@ class AmountParserTest {
     // -------------------------------------------------------
     @Test
     fun test_ignoreKeywords() {
-        assertTrue(AmountParser.containsIgnoredKeywords("Your OTP is 123456"))
+        assertTrue(AmountParser.containsIgnoredKeywords("OTP is 151742 for txn of INR 107.00 at SWIGGY on HDFC Bank card ending xxxx. Valid till  11:23. Do not share OTP for security reasons"))
         assertTrue(AmountParser.containsIgnoredKeywords("Get Rs 200 off now!"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Get 50% off your next purchase"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Huge discount on all items!"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Your loan of Rs. 50000 has been approved"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Talk to our broker for more details about your Rs. 1000 investment"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Claim your free gift of 500 rupees now"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Redeem your coupon for a free meal worth Rs. 300"))
+        assertTrue(AmountParser.containsIgnoredKeywords("You won a prize of 1000 rupees!"))
+        assertTrue(AmountParser.containsIgnoredKeywords("Sign-up bonus of Rs. 100."))
+
         assertFalse(AmountParser.containsIgnoredKeywords("Rs 200 debited"))
     }
 

@@ -1,6 +1,19 @@
 object AmountParser {
 
-    private val ignoreKeywords = listOf("otp", "offer", " off ", "%")
+    private val ignoreKeywords = listOf(
+        "otp",
+        "offer",
+        " off ",
+        "%",
+        "discount",
+        "free",
+        "claim",
+        "redeem",
+        "broker",
+        "loan",
+        "prize",
+        "bonus"
+    )
 
     // -----------------------------
     // 1. Ignore spam/OTP
