@@ -9,13 +9,18 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun History(expenses: List<ExpenseWithCategory>) {
+fun History(
+    expenses: List<ExpenseWithCategory>,
+    isDetailedHistory: Boolean = false
+) {
     LazyColumn {
         items(expenses) { (expense, category) ->
             ExpenseRow(
                 category = category?.name ?: "Uncategorized",
                 amount = expense.amount,
-                date = expense.date.time.toFormattedDateString()
+                date = expense.date.time.toFormattedDateString(),
+                description = expense.description,
+                showDetailedDescription = isDetailedHistory
             )
         }
     }

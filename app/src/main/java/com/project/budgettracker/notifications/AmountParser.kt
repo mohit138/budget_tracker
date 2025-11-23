@@ -15,6 +15,7 @@ object AmountParser {
         "loan",
         "prize",
         "bonus",
+        " 5G ", // for an edge case of telecom operator in native language
     )
 
     // -----------------------------

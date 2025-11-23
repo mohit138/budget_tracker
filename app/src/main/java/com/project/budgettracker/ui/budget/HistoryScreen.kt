@@ -41,7 +41,7 @@ fun HistoryScreen(viewModel: BudgetViewModel = viewModel(factory = AppViewModelP
             selectedMonth = uiState.selectedMonth,
             onDateChange = viewModel::onDateChange
         )
-        History(expenses = uiState.expensesWithCategory)
+        History(expenses = uiState.expensesWithCategory, isDetailedHistory = true)
     }
 }
 
