@@ -12,10 +12,12 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Telephony
-import androidx.core.app.ActivityCompat
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.project.budgettracker.MainActivity.Companion.CHANNEL_ID
+import com.project.budgettracker.MainActivity.Companion.GROUP_KEY_EXPENSE
+import com.project.budgettracker.MainActivity.Companion.SUMMARY_ID
 import com.project.budgettracker.R
 
 
@@ -61,11 +63,22 @@ class NotificationReaderService : NotificationListenerService() {
     private fun showExpenseDetectedNotification(
         context: Context,
         amount: Double,
-        source: String?,
-        notificationId: Int = DismissReceiver.DEFAULT_NOTIFICATION_ID
+        source: String?
     ) {
-        // 1) Build the Intent that opens MainActivity and signals navigation to AddExpense
-        val intent = Intent(context, com.project.budgettracker.MainActivity::class.java).apply {
+        // Permission guard for Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.w("NotifReader", "POST_NOTIFICATIONS missing; skipping notification.")
+            return
+        }
+
+        val notificationId = System.currentTimeMillis().toInt()
+        val title = "Expense Detected"
+        val content = "₹$amount from ${source ?: "unknown"} — Add to tracker?"
+
+        val mainIntent = Intent(context, com.project.budgettracker.MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("navigate_to", "add_expense")
             putExtra("expense_amount", amount)
@@ -73,60 +86,54 @@ class NotificationReaderService : NotificationListenerService() {
 
         val openPendingIntent = PendingIntent.getActivity(
             context,
-            // unique request code for pending intent
-            (notificationId xor 0x1000),
-            intent,
+            notificationId,
+            mainIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // 2) Dismiss action
         val dismissIntent = Intent(context, DismissReceiver::class.java).apply {
             putExtra("notification_id", notificationId)
         }
+
         val dismissPendingIntent = PendingIntent.getBroadcast(
             context,
-            (notificationId xor 0x2000),
+            notificationId + 1,
             dismissIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // 3) Build the notification text
-        val title = "Budget tracker : Expense Detected"
-        val content = "₹${amount} from ${source ?: "unknown"} — Add to tracker?"
-
-        // 4) Permission guard for Android 13+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val hasPerm = ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (!hasPerm) {
-                Log.w("NotifReader", "POST_NOTIFICATIONS missing; skipping notification.")
-                return
-            }
-        }
-
-        // 5) Build heads-up notification using NotificationCompat
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_name) // replace with your app icon if available
+        val childBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_name)
             .setContentTitle(title)
             .setContentText(content)
             .setStyle(NotificationCompat.BigTextStyle().bigText(content))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
-            .setFullScreenIntent(openPendingIntent, true) // helps with heads-up
+            .setGroup(GROUP_KEY_EXPENSE)
+            .setContentIntent(openPendingIntent)
             .addAction(android.R.drawable.ic_input_add, "Add", openPendingIntent)
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Dismiss", dismissPendingIntent)
 
-        // 6) Show the notification via NotificationManagerCompat
-        try {
-            NotificationManagerCompat.from(context).notify(notificationId, builder.build())
-        } catch (se: SecurityException) {
-            Log.w("NotifReader", "SecurityException posting notification: ${se.message}")
-        }
+        NotificationManagerCompat.from(context).notify(notificationId, childBuilder.build())
+        // summary Notification
+        postSummaryNotification(context)
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun postSummaryNotification(context: Context) {
+        val summary = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_name)
+            .setContentTitle("Detected Expenses")
+            .setContentText("Review detected expenses")
+            .setGroup(GROUP_KEY_EXPENSE)
+            .setGroupSummary(true)
+            .setOngoing(true)                      // <<< keeps summary alive like WhatsApp
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
 
+        NotificationManagerCompat.from(context).notify(SUMMARY_ID, summary)
+    }
 }

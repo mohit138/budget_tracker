@@ -99,6 +99,8 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val CHANNEL_ID = "expense_detection_channel"
+        const val GROUP_KEY_EXPENSE = "group_expense_notifications"
+        const val SUMMARY_ID = 9999
     }
 
     private val hasNotificationAccess = mutableStateOf(false)

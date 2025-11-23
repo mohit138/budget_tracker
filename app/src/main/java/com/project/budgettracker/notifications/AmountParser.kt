@@ -3,6 +3,8 @@ object AmountParser {
     private val ignoreKeywords = listOf(
         "otp",
         "offer",
+        "credit",
+        "credited",
         " off ",
         "%",
         "discount",
@@ -12,7 +14,7 @@ object AmountParser {
         "broker",
         "loan",
         "prize",
-        "bonus"
+        "bonus",
     )
 
     // -----------------------------
