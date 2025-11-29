@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +26,9 @@ fun BudgetSpentRow(
     val categoryStyle = if (isHighlighted) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleLarge
     val amountStyle = if (isHighlighted) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge
 
+    val isBudgetExceeded = if (budget != 0.0) amountSpent > budget else false
+    val progressIndicatorColor = if (isBudgetExceeded) MaterialTheme.colorScheme.error else ProgressIndicatorDefaults.circularColor
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +43,13 @@ fun BudgetSpentRow(
                 style = amountStyle
             )
         }
-        CircularProgressIndicator(progress = (amountSpent / budget).toFloat())
+        CircularProgressIndicator(
+        progress = { (amountSpent / budget).toFloat() },
+            color = progressIndicatorColor,
+        strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth,
+        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+        strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
+        )
     }
 }
 
@@ -64,6 +74,18 @@ fun HighlightedBudgetSpentRowPreview() {
             amountSpent = 45000.0,
             budget = 60000.0,
             isHighlighted = true
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BudgetSpentRowWithExceededBudgetPreview() {
+    BudgetTrackerTheme {
+        BudgetSpentRow(
+            category = "Gross Budget",
+            amountSpent = 65000.0,
+            budget = 60000.0
         )
     }
 }
