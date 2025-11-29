@@ -5,7 +5,7 @@ object AmountParser {
         "offer",
         "credit",
         "credited",
-        " off ",
+        " off",
         "%",
         "discount",
         "free",
@@ -15,7 +15,7 @@ object AmountParser {
         "loan",
         "prize",
         "bonus",
-        " 5G ", // for an edge case of telecom operator in native language
+        "5G", // for an edge case of telecom operator in native language
     )
 
     // -----------------------------
@@ -63,31 +63,7 @@ object AmountParser {
         actionNumRegex.find(text)?.let { m ->
             return m.groupValues[1].toDoubleOrNull()
         }
-
-        // 2) Otherwise, gather plain numeric candidates
-        val numberRegex = Regex("\\b([0-9]+(?:\\.[0-9]+)?)\\b")
-        val candidates = numberRegex.findAll(text).map { it.value }.toList()
-        if (candidates.isEmpty()) return null
-
-        // Helper to detect if candidate is part of an account token like X1118 or *1110
-        fun isPartOfAccount(candidate: String, fullText: String): Boolean {
-            // Look for patterns like X1118, x1118, *1110 nearby
-            val accPatterns = listOf(Regex("(?i)[x*]\\s*${Regex.escape(candidate)}"), Regex("(?i)${Regex.escape(candidate)}[A-Za-z]"))
-            return accPatterns.any { it.containsMatchIn(fullText) }
-        }
-
-        val filtered = candidates.filter { num ->
-            // Skip years (like 2025)
-            if (num.length == 4 && (num.startsWith("20") || num.toIntOrNull() in 1900..2100)) return@filter false
-
-            // If this candidate is embedded in or directly adjacent to account-like token (X1118, *1110), skip it
-            if (isPartOfAccount(num, text)) return@filter false
-
-            true
-        }
-
-        // Return first filtered candidate as Double (if any)
-        return filtered.firstOrNull()?.toDoubleOrNull()
+        return null
     }
 
 
