@@ -35,7 +35,7 @@ class NotificationReaderService : NotificationListenerService() {
         val defaultSmsApp = Telephony.Sms.getDefaultSmsPackage(applicationContext)
 
         // Ignore non message related notifications (important!)
-        if (sbn.packageName != defaultSmsApp) {
+        if (!sbn.packageName.equals(defaultSmsApp)) {
             return
         }
 
