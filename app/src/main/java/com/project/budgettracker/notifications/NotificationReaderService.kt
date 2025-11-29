@@ -40,7 +40,6 @@ class NotificationReaderService : NotificationListenerService() {
         }
 
         val packageName = sbn.packageName ?: "unknown_pkg"
-        val tag = sbn.tag
         val notification = sbn.notification
         val extras: Bundle? = notification.extras
         val title = extras?.getCharSequence(Notification.EXTRA_TITLE)?.toString()
@@ -52,7 +51,11 @@ class NotificationReaderService : NotificationListenerService() {
             showExpenseDetectedNotification(this, parsedAmount, /*source*/ title ?: sbn.packageName)
         }
 
-        Log.d(TAG, "NOTIF POSTED from=$packageName tag=$tag title=$title text=$text parsedAmount=$parsedAmount")
+        Log.d(TAG, "NOTIF POSTED from=$packageName")
+
+        // Log for Debugging
+        // val tag = sbn.tag
+        // Log.d(TAG, "NOTIF POSTED from=$packageName tag=$tag title=$title text=$text parsedAmount=$parsedAmount")
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
