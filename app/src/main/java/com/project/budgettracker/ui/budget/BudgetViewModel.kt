@@ -46,14 +46,29 @@ class BudgetViewModel(
 
     private val _selectedDate = MutableStateFlow(Calendar.getInstance())
 
-    private val expensesFlow = _selectedDate.flatMapLatest { selectedDate ->
-        val calendar = selectedDate.clone() as Calendar
+    // TODO: Write unit tests for these flows
+    private fun convertToFirstDayOfMonth(calendar: Calendar) {
         calendar.set(Calendar.DAY_OF_MONTH, 1)
-        val startDate = Date(calendar.timeInMillis)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+    }
 
+    private fun convertToLastDayOfMonth(calendar: Calendar) {
         calendar.add(Calendar.MONTH, 1)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         calendar.add(Calendar.DATE, -1)
+    }
+
+    private val expensesFlow = _selectedDate.flatMapLatest { selectedDate ->
+        val calendar = selectedDate.clone() as Calendar
+
+        convertToFirstDayOfMonth(calendar)
+
+        val startDate = Date(calendar.timeInMillis)
+
+        convertToLastDayOfMonth(calendar)
         val endDate = Date(calendar.timeInMillis)
 
         expensesRepository.getExpensesBetweenDates(startDate, endDate)
