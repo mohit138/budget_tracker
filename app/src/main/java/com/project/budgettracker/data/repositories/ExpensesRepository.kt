@@ -2,7 +2,7 @@ package com.project.budgettracker.data.repositories
 
 import com.project.budgettracker.data.entities.Expense
 import kotlinx.coroutines.flow.Flow
-import java.sql.Date
+import java.util.Date
 
 interface ExpensesRepository {
     // Expense methods

@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.project.budgettracker.data.entities.Expense
 import kotlinx.coroutines.flow.Flow
-import java.sql.Date
+import java.util.Date
 
 @Dao
 interface ExpenseDao {

@@ -7,14 +7,15 @@ import com.project.budgettracker.data.entities.Expense
 import com.project.budgettracker.data.repositories.CategoryRepository
 import com.project.budgettracker.data.repositories.ExpensesRepository
 import com.project.budgettracker.ui.components.SummaryRowData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
-import java.sql.Date
 import java.util.Calendar
+import java.util.Date
 
 /**
  * UI state for the shared budget screens (Home, History, Summary).
@@ -39,6 +40,7 @@ data class ExpenseWithCategory(
     val category: Category?
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BudgetViewModel(
     private val expensesRepository: ExpensesRepository,
     categoryRepository: CategoryRepository
@@ -59,6 +61,10 @@ class BudgetViewModel(
         calendar.add(Calendar.MONTH, 1)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         calendar.add(Calendar.DATE, -1)
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
     }
 
     private val expensesFlow = _selectedDate.flatMapLatest { selectedDate ->
@@ -68,8 +74,10 @@ class BudgetViewModel(
 
         val startDate = Date(calendar.timeInMillis)
 
-        convertToLastDayOfMonth(calendar)
-        val endDate = Date(calendar.timeInMillis)
+        // Create a separate calendar instance for the end date
+        val endCalendar = selectedDate.clone() as Calendar
+        convertToLastDayOfMonth(endCalendar)
+        val endDate = Date(endCalendar.timeInMillis)
 
         expensesRepository.getExpensesBetweenDates(startDate, endDate)
     }

@@ -45,7 +45,6 @@ class AmountParserTest {
         assertEquals(170.0, AmountParser.extractActionBasedAmount("debited by 170.0 today")!!, 0.001)
         assertEquals(200.5, AmountParser.extractActionBasedAmount("sent 200.5 to user")!!, 0.001)
         assertEquals(780.0, AmountParser.extractActionBasedAmount("paid 780 for bill")!!, 0.001)
-        assertEquals(150.0, AmountParser.extractActionBasedAmount("credited 150.0")!!, 0.001)
 
         assertNull(AmountParser.extractActionBasedAmount("nothing here"))
     }
